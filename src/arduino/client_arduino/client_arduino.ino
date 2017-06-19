@@ -26,10 +26,10 @@
 byte mac[] = {
   0xDE, 0xAD, 0xBB, 0x1F, 0xFF, 0xED
 };
-IPAddress ip(192, 168, 141, 73);
+IPAddress ip(10, 4, 131, 7);
 
 // Enter the IP address of the server you're connecting to:
-IPAddress server(192, 168, 141, 157);
+IPAddress server(10, 4, 131, 3);
 
 // Initialize the Ethernet client library
 // with the IP address and port of the server
@@ -77,15 +77,15 @@ void loop() {
       client.println(message);
   }
   /*while (Serial.available() > 0) {
-    message_available = 
+    message_available =
     char inChar = Serial.read();
     if (client.connected()) {
       client.print(inChar);
     }
-    
+
   }*/
 
-  
+
 
   // if the server's disconnected, stop the client:
   if (!client.connected()) {
@@ -96,7 +96,3 @@ void loop() {
     while (true);
   }
 }
-
-
-
-
