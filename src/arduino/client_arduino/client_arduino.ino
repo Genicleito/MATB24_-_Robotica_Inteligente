@@ -21,6 +21,11 @@
 #include <SPI.h>
 #include <Ethernet.h>
 
+enum inteiros { _tempID, _humidID, _lampID };
+int _temp = 32
+    , _humid = 60
+    , _lamp = 1 ;
+
 // Enter a MAC address and IP address for your controller below.
 // The IP address will be dependent on your local network:
 byte mac[] = {
@@ -35,11 +40,13 @@ IPAddress server(10, 4, 131, 3);
 // with the IP address and port of the server
 // that you want to connect to (port 23 is default for telnet;
 // if you're using Processing's ChatServer, use port 10002):
-EthernetClient client;
+// EthernetClient client;
+
+#define client Serial
 
 void setup() {
   // start the Ethernet connection:
-  Ethernet.begin(mac, ip);
+  // Ethernet.begin(mac, ip);
   // Open serial communications and wait for port to open:
   Serial.begin(9600);
   while (!Serial) {
@@ -49,31 +56,77 @@ void setup() {
 
   // give the Ethernet shield a second to initialize:
   delay(1000);
-  Serial.println("connecting...");
+  Serial.println("Waiting Message");
 
   // if you get a connection, report back via serial:
-  if (client.connect(server, 7777)) {
-    Serial.println("connected");
-  } else {
-    // if you didn't get a connection to the server:
-    Serial.println("connection failed");
-  }
+  // if (client.connect(server, 7777)) {
+  //   Serial.println("connected");
+  // } else {
+  //   // if you didn't get a connection to the server:
+  //   Serial.println("connection failed");
+  // }
 }
 
 void loop() {
   // if there are incoming bytes available
   // from the server, read them and print them:
-  if (client.available()) {
-    char c = client.read();
-    Serial.print(c);
-  }
-
+  // if (client.available()) {
+  //   char c = client.read();
+  //   Serial.print(c);
+  // }
+  // if (client.available()) {
+  //   char c = client.read();
+  //   Serial.print(c);
+  // }
   // as long as there are bytes in the serial queue,
   // read them and send them out the socket if it's open:
+  // bool message_available = (Serial.available() > 0);
+  // String message;
+  // if (client.connected() && message_available) {
+  //     message = Serial.readStringUntil('\n');
+  //     client.println(message);
+  // }
   bool message_available = (Serial.available() > 0);
   String message;
-  if (client.connected() && message_available) {
+  int retorno;
+  if (message_available) {
       message = Serial.readStringUntil('\n');
+      Serial.println(message);//<debug>
+      int property = atoi(&message[1]);
+      switch (message[0]) {
+        case 'S':
+          int value;
+          value = atoi(&message[3]);
+          switch (property) {
+            case _tempID:
+              _temp = value;
+              break;
+            case _humidID:
+              _humid = value;
+              break;
+            case _lampID:
+              _lamp = value;
+              break;
+          }
+          break;
+        case 'G':
+          switch (property) {
+            case _tempID:
+              retorno = _temp;
+              break;
+            case _humidID:
+              retorno = _humid;
+              break;
+            case _lampID:
+              retorno = _lamp;
+              break;
+          }
+          String aux = String(retorno);
+          String resposta = "R" + aux;
+          client.print("resposta:  ");
+          client.println(resposta);
+          break;
+      }
       client.println(message);
   }
   /*while (Serial.available() > 0) {
@@ -88,11 +141,11 @@ void loop() {
 
 
   // if the server's disconnected, stop the client:
-  if (!client.connected()) {
-    Serial.println();
-    Serial.println("disconnecting.");
-    client.stop();
-    // do nothing:
-    while (true);
-  }
+  // if (!client.connected()) {
+  //   Serial.println();
+  //   Serial.println("disconnecting.");
+  //   client.stop();
+  //   // do nothing:
+  //   while (true);
+  // }
 }
