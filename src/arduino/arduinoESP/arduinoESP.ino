@@ -1,86 +1,48 @@
-#include <SPI.h>
-#include <ESP8266WiFi.h>
+
 #include <string.h>
-
-#define MAX_SRV_CLIENTS 1
-const char* ssid = "**********";
-const char* password = "**********";
-
-WiFiServer server(23);
-WiFiClient serverClients[MAX_SRV_CLIENTS];
+#include "BASEROBO.h"
 
 // enum inteiros { _tempID, _humidID, _lampID };
-enum inteiros { _tempID, _humidID };
-int _temp = 32
-    , _humid = 60
-    , _lamp = 1 ;
-#define _lampID 12
+enum inteiros { _esqID, _dirID, _esqSpeedID, _dirSpeedID };
 
-#define client Serial
+int direita,esquerda;
+int _dirSpeed,_esqSpeed;
 
 void setup() {
   // start the Ethernet connection:
   // Ethernet.begin(mac, ip);
   // Open serial communications and wait for port to open:
-  Serial.begin(9600);
-  WiFi.begin(ssid, password);
+  Serial.begin(115200);
+
+    pinMode(DIRECAO_DIREITA_1, OUTPUT);
+    pinMode(DIRECAO_DIREITA_2, OUTPUT);
+    pinMode(DIRECAO_ESQUERDA_1, OUTPUT);
+    pinMode(DIRECAO_ESQUERDA_2, OUTPUT);
+
+    // // Configuração dos pinos do Encoder Ótico
+    // pinMode(ENCODER_DIREITA, INPUT_PULLUP);
+    // pinMode(ENCODER_ESQUERDA, INPUT_PULLUP);
+    //
+    // // Funções de Interrupção de cada um dos Encoders
+    // attachInterrupt(digitalPinToInterrupt(ENCODER_DIREITA), contadorDireita, CHANGE);
+    // attachInterrupt(digitalPinToInterrupt(ENCODER_ESQUERDA), contadorEsquerda, CHANGE);
+
 
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
 
-  while (WiFi.status() != WL_CONNECTED && i++ < 20) delay(500);
-  if(i == 21){
-    Serial1.print("Could not connect to"); Serial1.println(ssid);
-    while(1) delay(500);
-  }
-
-  // give the Ethernet shield a second to initialize:
-  delay(1000);
-  Serial.println("Waiting Message");
-
-  server.begin();
-  server.setNoDelay(true);
-  Serial1.print("Ready! Use 'telnet ");
-  Serial1.print(WiFi.localIP());
-  Serial1.println(" 23' to connect");
-
 }
 
+void messageHandler();
 void loop() {
-  uint8_t i,j;
-  //check if there are any new clients
-  if (server.hasClient()){
-    for(i = 0; i < MAX_SRV_CLIENTS; i++){
-      //find free/disconnected spot
-      if (!serverClients[i] || !serverClients[i].connected()){
-        if(serverClients[i]) serverClients[i].stop();
-        serverClients[i] = server.available();
-        Serial1.print("New client: "); Serial1.print(i);
-        continue;
-      }
-    }
-    //no free/disconnected spot so reject
-    WiFiClient serverClient = server.available();
-    serverClient.stop();
+  if(Serial.available() > 0){
+    messageHandler();
   }
-  //check clients for data
-  char buffer[21];
-  for(i = 0; i < MAX_SRV_CLIENTS; i++){
-    if (serverClients[i] && serverClients[i].connected()){
-      if(serverClients[i].available()){
 
-        for (j = 0; serverClients[i].available(); j++) {
-          buffer[i] = serverClients[i].read();
-        }
-        String message(buffer);
-        messageHandler(message,i);
-      }
-    }
-  }
 }
 
-void messageHandler(String message,int i){
+void messageHandler(){
   String message;
   int retorno;
 
@@ -92,41 +54,76 @@ void messageHandler(String message,int i){
       int value;
       value = atoi(&message[message.indexOf('=')+1]);
       switch (property) {
-        case _tempID:
-          _temp = value;
+        case _esqID:
+          esquerda = value;
+
           break;
-        case _humidID:
-          _humid = value;
+        case _dirID:
+          direita = value;
+
           break;
-        case _lampID:
-          _lamp = value;
+        case _esqSpeedID:
+          // _esqSpeed = value;
+          switch (esquerda) {
+            case 0:
+              FREIO_ESQUERDA();
+              break;
+            case 1:
+              Serial.print("Esquerda: ");
+              Serial.println(value);
+              ACELERA_ESQUERDA(value);
+              IR_PARA_FRENTE_ESQUERDA();
+              break;
+            // case -1:
+            //   ACELERA_ESQUERDA(-value);
+            //   break;
+
+          }
           break;
-      }
-      break;
-    case 'G':
-      switch (property) {
-        case _tempID:
-          retorno = _temp;
+
+        case _dirSpeedID:
+          switch (direita) {
+            case 0:
+              FREIO_DIREITA();
+              break;
+            case 1:
+              Serial.print("Direita: ");
+              Serial.println(value);
+              ACELERA_DIREITA(value);
+              IR_PARA_FRENTE_DIREITA();
+              break;
+            // case -1:
+            //   ACELERA_ESQUERDA(-value);
+            //   break;
+
+          }
           break;
-        case _humidID:
-          retorno = _humid;
-          break;
-        case _lampID:
-          retorno = _lamp;
-          break;
+
         default:
           String aux = String(retorno);
           String resposta = "MErro: 404";
           char buffer[21];
-          string.toCharArray(buffer, len)
-          serverClients[i].write(buffer, resposta.length());
+          Serial.println(resposta);
+          // serverClients[i].write(buffer, resposta.length());
+          return;
+
+      }
+      break;
+    case 'G':
+      switch (property) {
+        default:
+          String aux = String(retorno);
+          String resposta = "MErro: 404";
+          char buffer[21];
+          Serial.println(resposta);
+          // serverClients[i].write(buffer, resposta.length());
           return;
       }
+
       String aux = String(retorno);
       String resposta = "R" + aux;
-      char buffer[21];
-      string.toCharArray(buffer, len)
-      serverClients[i].write(buffer, resposta.length());
+      Serial.println(resposta);
+      // serverClients[i].write(buffer, resposta.length());
       break;
   }
 
