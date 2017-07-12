@@ -69,11 +69,18 @@ void messageHandler(){
               FREIO_ESQUERDA();
               break;
             case 1:
-              Serial.print("Esquerda: ");
+              Serial.print("Esquerda Frente: ");
               Serial.println(value);
               ACELERA_ESQUERDA(value);
               IR_PARA_FRENTE_ESQUERDA();
               break;
+            case -1:
+              Serial.print("Esquerda: Tras");
+              Serial.println(value);
+              ACELERA_ESQUERDA(value);
+              IR_PARA_TRAS_ESQUERDA();
+              break;
+
             // case -1:
             //   ACELERA_ESQUERDA(-value);
             //   break;
@@ -95,7 +102,8 @@ void messageHandler(){
             case -1:
               Serial.print("Direita Tras: ");
               Serial.println(value);
-              ACELERA_ESQUERDA(value);
+              ACELERA_DIREITA(value);
+              IR_PARA_TRAS_DIREITA();
               break;
 
           }
