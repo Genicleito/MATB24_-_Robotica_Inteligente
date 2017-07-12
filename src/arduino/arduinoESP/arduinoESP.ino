@@ -87,14 +87,16 @@ void messageHandler(){
               FREIO_DIREITA();
               break;
             case 1:
-              Serial.print("Direita: ");
+              Serial.print("Direita Frente: ");
               Serial.println(value);
               ACELERA_DIREITA(value);
               IR_PARA_FRENTE_DIREITA();
               break;
-            // case -1:
-            //   ACELERA_ESQUERDA(-value);
-            //   break;
+            case -1:
+              Serial.print("Direita Tras: ");
+              Serial.println(value);
+              ACELERA_ESQUERDA(value);
+              break;
 
           }
           break;

@@ -22,7 +22,7 @@
 
 //how many clients should be able to telnet to this ESP8266
 #define MAX_SRV_CLIENTS 1
-const char* ssid = "wiser";
+const char* ssid = "wiser3";
 const char* password = "wiser2014";
 
 WiFiServer server(23);
@@ -39,7 +39,7 @@ void setup() {
     while(1) delay(500);
   }
   //start UART and the server
-  Serial.begin(115200);
+  // Serial.begin(115200);
   server.begin();
   server.setNoDelay(true);
 
