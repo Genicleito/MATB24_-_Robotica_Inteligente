@@ -56,12 +56,15 @@ void messageHandler(){
       switch (property) {
         case _esqID:
           esquerda = value;
-
+          Serial.print("Seta esquerda: ");
+          Serial.print(value);
           break;
         case _dirID:
           direita = value;
-
+          Serial.print("Seta direita: ");
+          Serial.print(value);
           break;
+
         case _esqSpeedID:
           // _esqSpeed = value;
           switch (esquerda) {
@@ -70,13 +73,13 @@ void messageHandler(){
               break;
             case 1:
               Serial.print("Esquerda Frente: ");
-              Serial.println(value);
+              Serial.print(value);
               ACELERA_ESQUERDA(value);
               IR_PARA_FRENTE_ESQUERDA();
               break;
             case -1:
               Serial.print("Esquerda: Tras");
-              Serial.println(value);
+              Serial.print(value);
               ACELERA_ESQUERDA(value);
               IR_PARA_TRAS_ESQUERDA();
               break;

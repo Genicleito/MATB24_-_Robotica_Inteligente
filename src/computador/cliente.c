@@ -11,13 +11,13 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 
-//#define ip "127.0.0.1"
+//#define ip "192.168.1.124"
 #define tmb 1024
 #define porta 23
 int main ()
 {
 
-    char ip[16] = "192.168.0.108";
+    char ip[16] = "192.168.1.124";
     char buffer[tmb], bufaux[tmb], *loc;
     char comandos[]="/x /mem /disc /time /pros /port /help";
     int tbuf, skt, escolha;
