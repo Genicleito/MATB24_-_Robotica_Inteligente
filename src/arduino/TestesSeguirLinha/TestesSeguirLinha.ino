@@ -18,11 +18,11 @@
 
 #define IR_PARA_FRENTE_DIREITA() do { digitalWrite(DIRECAO_DIREITA_1, HIGH); digitalWrite(DIRECAO_DIREITA_2, LOW); } while(false)
 #define IR_PARA_FRENTE_ESQUERDA() do { digitalWrite(DIRECAO_ESQUERDA_1, HIGH); digitalWrite(DIRECAO_ESQUERDA_2, LOW); } while(false)
-#define IR_PARA_FRENTE() do { IR_PARA_FRENTE_DIREITA(); IR_PARA_FRENTE_ESQUERDA(); Serial.println("Andando para frente...");} while(false)
+#define IR_PARA_FRENTE() do { IR_PARA_FRENTE_DIREITA(); IR_PARA_FRENTE_ESQUERDA(); } while(false)
 
-#define IR_PARA_TRAS_DIREITA() do { digitalWrite(DIRECAO_DIREITA_1, LOW); digitalWrite(DIRECAO_DIREITA_2, HIGH); Serial.print("Indo para tras direita...");} while(false)
+#define IR_PARA_TRAS_DIREITA() do { digitalWrite(DIRECAO_DIREITA_1, LOW); digitalWrite(DIRECAO_DIREITA_2, HIGH); } while(false)
 #define IR_PARA_TRAS_ESQUERDA() do { digitalWrite(DIRECAO_ESQUERDA_1, LOW); digitalWrite(DIRECAO_ESQUERDA_2, HIGH); } while(false)
-#define IR_PARA_TRAS() do { IR_PARA_TRAS_DIREITA(); IR_PARA_TRAS_ESQUERDA(); Serial.println("Andando para tras...");} while(false)
+#define IR_PARA_TRAS() do { IR_PARA_TRAS_DIREITA(); IR_PARA_TRAS_ESQUERDA(); } while(false)
 
 #define ACELERA_DIREITA(VELOCIDADE) do { pwmDireita = VELOCIDADE; analogWrite(ACELERADOR_DIREITA, VELOCIDADE); } while(false)
 #define ACELERA_ESQUERDA(VELOCIDADE) do { pwmEsquerda = VELOCIDADE; analogWrite(ACELERADOR_ESQUERDA, VELOCIDADE); } while(false)
@@ -103,7 +103,7 @@ void loop() {
         delay(20);
       }
   }if (analogRead(A0) < 200 && analogRead(A1) < 200 && analogRead(A2) < 200 && analogRead(A3), analogRead(A4)){ // Frente e trás sairam da linha
-    Serial.println("parar");
+    //Serial.println("parar");
     FREIO();
     delay(500);
   }
@@ -129,8 +129,8 @@ void loop() {
     
   }
   */
-  Serial.println(contador_direita);
-  Serial.println(contador_esquerda);
+  //Serial.println(contador_direita);
+  //Serial.println(contador_esquerda);
   /*
   ACELERA_DIREITA(velocidadeDireita);
   ACELERA_ESQUERDA(velocidadeEsquerda);
