@@ -43,8 +43,8 @@ volatile int contador_direita = 0;
 volatile int contador_esquerda = 0;
 
 // Definir velocidades
-int velocidadeDireita  = 130;
-int velocidadeEsquerda = 130;
+int velocidadeDireita  = 255;
+int velocidadeEsquerda = 225;
 
 void setup() {
   // Configuração da Comunicação Serial
