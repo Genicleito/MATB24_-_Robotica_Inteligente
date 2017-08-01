@@ -11,6 +11,8 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 
+#include "minimax.c"
+
 //#define ip "192.168.1.124"
 #define tmb 1024
 #define porta 23
