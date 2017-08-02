@@ -55,7 +55,7 @@ int minimax(int board[9], int player) {
     return score;
 }
 
-void movimentoDoRobo(int board[9]) {
+int movimentoDoRobo(int board[9]) {
     int move = -1;
     int score = -2;
     int i;
@@ -72,6 +72,7 @@ void movimentoDoRobo(int board[9]) {
     }
     //returns a score based on minimax tree at a given node.
     board[move] = 1;
+    return move;
 }
 
 void movimentoDoJogador(int board[9]) {

@@ -19,6 +19,15 @@
 int main ()
 {
 
+    // game
+    printf("Computer: O, You: X\nPlay (1)st or (2)nd? ");
+    int board[9] = {0,0,0,0,0,0,0,0,0};
+    //computer quadrados are 1, player quadrados are -1.
+    int player=0;
+    scanf("%d",&player);
+    printf("\n");
+    unsigned turn;
+
     char ip[16] = "192.168.1.124";
     char buffer[tmb], bufaux[tmb], *loc;
     char comandos[]="/x /mem /disc /time /pros /port /help";
@@ -61,7 +70,20 @@ int main ()
     // Envia ack p/ serv
     strcpy(buffer, "Client comunicando OK!!!");
     send(skt, buffer, strlen(buffer), 0 );
-    while(strcmp(buffer,"/x") != 0){
+    // while(strcmp(buffer,"/x") != 0){
+
+    for(turn = 0; turn < 9 && win(board) == 0; ++turn) {
+        int move;
+        if((turn+player) % 2 == 0)
+            move = movimentoDoRobo(board);
+            gets(buffer);
+            strcpy(bufaux,buffer);
+            send(skt, buffer, strlen(buffer), 0);
+        else {
+            draw(board);
+            movimentoDoJogador(board);
+        }
+        // }
       printf("> Envie um comando: ");
       gets(buffer);
       strcpy(bufaux,buffer);
@@ -103,4 +125,32 @@ int main ()
      close(skt);
      printf (">>A conexao com o servidor foi finalizada!!!\n\n");
      exit(0);
+}
+
+void jogada(){
+
+
+
+
+
+    // for(turn = 0; turn < 9 && win(board) == 0; ++turn) {
+    if((turn+player) % 2 == 0)
+        movimentoDoRobo(board);
+    else {
+        draw(board);
+        movimentoDoJogador(board);
+    }
+    // }
+    switch(win(board)) {
+        case 0:
+            printf("A draw. How droll.\n");
+            break;
+        case 1:
+            draw(board);
+            printf("You lose.\n");
+            break;
+        case -1:
+            printf("You win. Inconceivable!\n");
+            break;
+    }
 }
