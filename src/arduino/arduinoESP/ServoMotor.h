@@ -32,7 +32,7 @@ void irParaDireitaServoInferior(){
 
 void irParaEsquerdaServoInferior(){
   for(int i = 170; i > 0; i--){
-    inferior.write(i);
+    servoInferior.write(i);
     delay(10);
   }
 }
