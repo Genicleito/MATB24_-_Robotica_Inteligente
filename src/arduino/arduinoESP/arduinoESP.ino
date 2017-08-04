@@ -1,6 +1,7 @@
 
 #include <string.h>
 #include "BASEROBO.h"
+#include "ServoMotor.h"
 
 #define centro 4
 
@@ -14,7 +15,35 @@ int neighbours[] = {0,3,6,7,8,5,2,1};
 int corners[] = {0,2,6,8};
 int current = 0;
 
+bool pattern [3][3] = {         {0,0,0},
+                                {0,0,0},
+                                {0,0,0}
+    };
+bool patternStraight [3][3] = { {0,1,0},
+                                {0,1,0},
+                                {0,1,0}
+    };
 
+bool patternT [3][3] = {        {0,1,0},
+                                {1,1,0},
+                                {0,1,0}
+    };
+
+bool patternCorner [3][3] = {   {0,0,0},
+                                {1,1,0},
+                                {0,1,0}
+    };
+
+bool patternCenter [3][3] = {   {0,1,0},
+                                {1,1,1},
+                                {0,1,0}
+    };
+
+#define FRENTE()    analogRead(A0)
+#define TRAS()      analogRead(A1)
+#define CENTRO()    analogRead(A2)
+#define DIREITA()   analogRead(A3)
+#define ESQUERDA()  analogRead(A4)
 
 void setup() {
   // start the Ethernet connection:
@@ -26,6 +55,9 @@ void setup() {
     pinMode(DIRECAO_DIREITA_2, OUTPUT);
     pinMode(DIRECAO_ESQUERDA_1, OUTPUT);
     pinMode(DIRECAO_ESQUERDA_2, OUTPUT);
+
+    servoSuperior.attach(11);
+    //servoInferior.attach(10);
 
     // // Configuração dos pinos do Encoder Ótico
     // pinMode(ENCODER_DIREITA, INPUT_PULLUP);
@@ -53,6 +85,10 @@ void loop() {
 void messageHandler(){
   String message;
   int retorno;
+
+  String aux;
+  String resposta;
+  char buffer[21];
 
   message = Serial.readStringUntil('\n');
   // Serial.println(message);//<debug>
@@ -123,17 +159,17 @@ void messageHandler(){
         case _posID:
           //----
           moveTo(value);
-          String aux = String(retorno);
-          String resposta = "End";
-          char buffer[21];
+          aux = String(retorno);
+          resposta = "End";
+          buffer[21];
           Serial.println(resposta);
 
           break;
 
         default:
-          String aux = String(retorno);
-          String resposta = "MErro: 404";
-          char buffer[21];
+          aux = String(retorno);
+          resposta = "MErro: 404";
+          buffer[21];
           Serial.println(resposta);
           // serverClients[i].write(buffer, resposta.length());
           return;
@@ -161,7 +197,13 @@ void messageHandler(){
 }
 
 void moveTo(int move){
-  while (!nextPos(move));
+  while (!nextPos(move)){ // a fazer: chamar movement(); dentro desse while
+    movement();
+  }
+  // desenhar no chão
+  levantarServoSuperior();
+  delay(2000);
+  abaixarServoSuperior();
 }
 
 bool nextPos(int move){
@@ -217,19 +259,54 @@ bool nextPos(int move){
 
 void movement(){
   size_t i;
-  for (i = 0; i < 4
-                && corners[i] != neighbours[current];
-                    i++);
+  int limiar = 500;
+  for (i = 0; i < 4 && corners[i] != neighbours[current]; i++);
   if (i == 4){
     // Go Forward
+    if((pattern[0][1] == true && pattern[1][1] == true) || (pattern[1][1] == true && pattern[2][1] == true)) {
+      ACELERA_DIREITA(velocidadeDireita);
+      ACELERA_ESQUERDA(velocidadeEsquerda);
+      IR_PARA_FRENTE();
+      delay(70);
+      FREIO();
+      delay(500);
+    }else{
+      if(ESQUERDA() >= limiar){ // ajeitar trajetória para esquerda
+        ACELERA_DIREITA(velocidadeDireita);
+        ACELERA_ESQUERDA(velocidadeEsquerda);
+        IR_PARA_TRAS_ESQUERDA();
+        IR_PARA_FRENTE_DIREITA();
+        delay(70);
+        FREIO();
+        delay(500);
+      }else if (DIREITA() >= limiar){
+        ACELERA_DIREITA(velocidadeDireita);
+        ACELERA_ESQUERDA(velocidadeEsquerda);
+        IR_PARA_TRAS_DIREITA();
+        IR_PARA_FRENTE_ESQUERDA();
+        delay(70);
+        FREIO();
+        delay(500);
+      }
+    }
+  } else {   // Achou uma quina
+    // Turn 90º
     ACELERA_DIREITA(velocidadeDireita);
     ACELERA_ESQUERDA(velocidadeEsquerda);
-    IR_PARA_FRENTE();
+    IR_PARA_TRAS_ESQUERDA();
+    IR_PARA_FRENTE_DIREITA();
     delay(70);
     FREIO();
     delay(500);
-  } else{
-    // Turn 90º
-  }
 
+    while(ESQUERDA() <= limiar){
+      ACELERA_DIREITA(velocidadeDireita);
+      ACELERA_ESQUERDA(velocidadeEsquerda);
+      IR_PARA_TRAS_ESQUERDA();
+      IR_PARA_FRENTE_DIREITA();
+      delay(70);
+      FREIO();
+      delay(500);
+    }
+  }
 }

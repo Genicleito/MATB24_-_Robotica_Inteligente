@@ -36,7 +36,7 @@ int main ()
 
     system("clear");
 
-    printf("\n    Aula de Robotica Inteligente - UFBA\n\n");
+    printf("\n    Robotica Inteligente - UFBA\n\n");
 
     //printf("\n>> Digite o ip do Servidor ou /x para sair: ");
     //gets(ip);
@@ -72,19 +72,39 @@ int main ()
     send(skt, buffer, strlen(buffer), 0 );
     // while(strcmp(buffer,"/x") != 0){
 
-    for(turn = 0; turn < 9 && win(board) == 0; ++turn) {
+    for(turn = 0; turn < 9 && vencer(board) == 0; ++turn) {
         int move;
         if((turn+player) % 2 == 0)
             move = movimentoDoRobo(board);
             gets(buffer);
             strcpy(bufaux,buffer);
             send(skt, buffer, strlen(buffer), 0);
+            printf("Waiting for response message: \n");
+            // Recebe ack do serv
+            tbuf = recv (skt, buffer, tmb, 0);
+            buffer[tbuf] = 0x00;
+            while(strcmp(bufaux,buffer) != 0){
+              printf ("Response: %s\n",buffer);
+              strcpy(bufaux,buffer);
+            }
         else {
-            draw(board);
+            desenhar(board);
             movimentoDoJogador(board);
         }
+        switch(vencer(board)) {
+            case 0:
+                printf("A draw. How droll.\n");
+                break;
+            case 1:
+                desenhar(board);
+                printf("You lose.\n");
+                break;
+            case -1:
+                printf("You win. Inconceivable!\n");
+                break;
+        }
         // }
-      printf("> Envie um comando: ");
+/*      printf("> Envie um comando: ");
       gets(buffer);
       strcpy(bufaux,buffer);
       send(skt, buffer, strlen(buffer), 0);
@@ -96,7 +116,7 @@ int main ()
         printf ("Response: %s\n",buffer);
         strcpy(bufaux,buffer);
       }
-      // while(strncmp(buffer,"/",1) == 0)
+*/      // while(strncmp(buffer,"/",1) == 0)
       //    if ((strcmp(buffer,"/mem") != 0) && (strcmp(buffer,"/disc") != 0)
       //    && (strcmp(buffer,"/time") != 0) && (strcmp(buffer,"/pros") != 0)
       //    && (strcmp(buffer,"/port") != 0) && (strcmp(buffer,"/help") != 0)
@@ -128,25 +148,19 @@ int main ()
 }
 
 void jogada(){
-
-
-
-
-
-    // for(turn = 0; turn < 9 && win(board) == 0; ++turn) {
     if((turn+player) % 2 == 0)
         movimentoDoRobo(board);
     else {
-        draw(board);
+        desenhar(board);
         movimentoDoJogador(board);
     }
     // }
-    switch(win(board)) {
+    switch(vencer(board)) {
         case 0:
             printf("A draw. How droll.\n");
             break;
         case 1:
-            draw(board);
+            desenhar(board);
             printf("You lose.\n");
             break;
         case -1:
